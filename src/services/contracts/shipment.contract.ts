@@ -31,9 +31,9 @@ export interface ShipmentRecord {
 }
 
 export interface PublicBookingInput {
-  sender: { name: string; phone: string; address: string; cityId: string; zoneId: string };
-  recipient: { name: string; phone: string; address: string; cityId: string; zoneId: string };
-  shipment: { serviceId: string; weightKg: number; paymentMethod: 'cod' | 'prepaid'; codAmount?: number };
+  sender: { name: string; phone: string; email?: string; address: string; cityId: string; zoneId: string; instructions?: string };
+  recipient: { name: string; phone: string; altPhone?: string; address: string; cityId: string; zoneId: string; instructions?: string };
+  shipment: { categoryId: string; description: string; pieces: number; serviceId: string; weightKg: number; dimensionsCm?: { length: number; width: number; height: number }; declaredValue?: number; pickupOption: 'pickup_from_address' | 'drop_at_branch'; preferredPickupDate?: string; specialHandling?: boolean; paymentMethod: 'cod' | 'prepaid'; codAmount?: number };
 }
 export interface PublicBookingResult { trackingNo: string; status: string; totalChargesPkr: number; createdAt: string; }
 
