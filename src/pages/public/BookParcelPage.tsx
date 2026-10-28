@@ -328,15 +328,20 @@ export function BookParcelPage() {
     try {
       const result = await shipmentService.createPublicBooking({
         sender: {
-          name: draft.sender.name.trim(), phone: draft.sender.phone.trim(), address: draft.sender.address.trim(),
-          cityId: draft.sender.cityId, zoneId: draft.sender.zoneId,
+          name: draft.sender.name.trim(), phone: draft.sender.phone.trim(), email: draft.sender.email?.trim() || undefined,
+          address: draft.sender.address.trim(), cityId: draft.sender.cityId, zoneId: draft.sender.zoneId,
+          instructions: draft.sender.instructions?.trim() || undefined,
         },
         recipient: {
-          name: draft.recipient.name.trim(), phone: draft.recipient.phone.trim(), address: draft.recipient.address.trim(),
-          cityId: draft.recipient.cityId, zoneId: draft.recipient.zoneId,
+          name: draft.recipient.name.trim(), phone: draft.recipient.phone.trim(), altPhone: draft.recipient.altPhone?.trim() || undefined,
+          address: draft.recipient.address.trim(), cityId: draft.recipient.cityId, zoneId: draft.recipient.zoneId,
+          instructions: draft.recipient.instructions?.trim() || undefined,
         },
         shipment: {
-          serviceId: draft.shipment.serviceId, weightKg: draft.shipment.weightKg,
+          categoryId: draft.shipment.categoryId, description: draft.shipment.description, pieces: draft.shipment.pieces,
+          serviceId: draft.shipment.serviceId, weightKg: draft.shipment.weightKg, dimensionsCm: draft.shipment.dimensionsCm,
+          declaredValue: draft.shipment.declaredValue, pickupOption: draft.shipment.pickupOption,
+          preferredPickupDate: draft.shipment.preferredPickupDate, specialHandling: draft.shipment.specialHandling,
           paymentMethod: draft.shipment.paymentMethod, codAmount: draft.shipment.paymentMethod === 'cod' ? draft.shipment.codAmount : undefined,
         },
       });
