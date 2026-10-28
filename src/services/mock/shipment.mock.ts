@@ -1,4 +1,5 @@
 import { ShipmentFilterParams, ShipmentRecord, ShipmentService } from '../contracts/shipment.contract';
+import { generateTrackingNo } from '@/lib/tracking';
 
 const simulateLatency = (min = 150, max = 300) =>
   new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * (max - min + 1)) + min));
@@ -8,7 +9,7 @@ export class MockShipmentService implements ShipmentService {
 
   async createPublicBooking(input: import('../contracts/shipment.contract').PublicBookingInput): Promise<import('../contracts/shipment.contract').PublicBookingResult> {
     await simulateLatency();
-    const trackingNo = `DEMO${Date.now().toString().slice(-10)}`;
+    const trackingNo = generateTrackingNo();
     const now = new Date().toISOString();
     this.inMemoryShipments.unshift({
       id: trackingNo, trackingNo, senderName: input.sender.name, senderPhone: input.sender.phone,
