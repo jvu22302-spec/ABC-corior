@@ -113,6 +113,14 @@ class SupabaseTrackingService implements TrackingService {
   }
 }
 class SupabaseShipmentService implements ShipmentService {
+  async createPublicBooking(input: PublicBookingInput): Promise<PublicBookingResult> {
+    const result = await request<PublicBookingResult>('/rest/v1/rpc/create_public_booking', {
+      method: 'POST',
+      body: JSON.stringify({ p_booking: input }),
+    });
+    if (!result?.trackingNo) throw new Error('Booking was not confirmed. Please try again.');
+    return result;
+  }
   async getShipmentByTracking(trackingNo:string){ const rows=await rest<Record<string,unknown>[]>('shipments',qs({select:'*',tracking_no:`eq.${trackingNo.trim().toUpperCase()}`,limit:1}),true); return rows[0]?shipmentFromRow(rows[0]):null; }
   async listShipments(params:ShipmentFilterParams={}) {
     const filters:Record<string,string|number|boolean|undefined>={select:'*',order:'created_at.desc',limit:params.limit??20,offset:params.offset??0};
