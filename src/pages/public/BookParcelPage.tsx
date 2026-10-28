@@ -3,7 +3,8 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-import { geographyService, rateService, RateNotFoundError } from '@/services';
+import { geographyService, rateService, shipmentService, RateNotFoundError } from '@/services';
+import { useToast } from '@/hooks/useToast';
 import { RateQuote } from '@/services/contracts/rate.contract';
 import {
   BookingDraft,
@@ -67,6 +68,7 @@ export function BookParcelPage() {
   useDocumentTitle('Book a Parcel — ABC');
 
   const { user } = useAuth();
+  const toast = useToast();
   const [searchParams] = useSearchParams();
 
   // Ref to step heading for accessible focus shift on step change
@@ -88,6 +90,8 @@ export function BookParcelPage() {
 
   // Field validation error states per step
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
+  const [bookingResult, setBookingResult] = useState<{ trackingNo: string; totalChargesPkr: number } | null>(null);
 
   // Parse carry-over state from URL params
   const carryOver = parseRatesFromSearchParams(searchParams);
@@ -309,6 +313,41 @@ export function BookParcelPage() {
     }
 
     return true;
+  };
+
+  const handleSubmitBooking = async () => {
+    if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
+      const firstInvalidStep = !senderStepSchema.safeParse(draft.sender).success ? 1
+        : !recipientStepSchema.safeParse(draft.recipient).success ? 2 : 3;
+      setCurrentStep(firstInvalidStep as 1 | 2 | 3);
+      toast.error('Please complete all required booking fields before submitting.');
+      return;
+    }
+    if (isSubmittingBooking || bookingResult) return;
+    setIsSubmittingBooking(true);
+    try {
+      const result = await shipmentService.createPublicBooking({
+        sender: {
+          name: draft.sender.name.trim(), phone: draft.sender.phone.trim(), address: draft.sender.address.trim(),
+          cityId: draft.sender.cityId, zoneId: draft.sender.zoneId,
+        },
+        recipient: {
+          name: draft.recipient.name.trim(), phone: draft.recipient.phone.trim(), address: draft.recipient.address.trim(),
+          cityId: draft.recipient.cityId, zoneId: draft.recipient.zoneId,
+        },
+        shipment: {
+          serviceId: draft.shipment.serviceId, weightKg: draft.shipment.weightKg,
+          paymentMethod: draft.shipment.paymentMethod, codAmount: draft.shipment.paymentMethod === 'cod' ? draft.shipment.codAmount : undefined,
+        },
+      });
+      setBookingResult({ trackingNo: result.trackingNo, totalChargesPkr: result.totalChargesPkr });
+      toast.success(`Booking confirmed. Tracking number: ${result.trackingNo}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to submit booking. Please try again.';
+      toast.error(message);
+    } finally {
+      setIsSubmittingBooking(false);
+    }
   };
 
   const handleNext = () => {
@@ -1133,32 +1172,46 @@ export function BookParcelPage() {
                     </div>
                   </div>
 
-                  {/* Cloudflare Turnstile Bot Protection Placeholder Box */}
-                  <div className="p-3 bg-surface-muted border border-dashed border-ink-300 rounded-lg text-center select-none">
-                    <div className="flex items-center justify-center gap-2 text-xs font-semibold text-ink-700">
-                      <ShieldCheck className="w-4 h-4 text-brand-600" />
-                      <span>Security Verification</span>
+                  {bookingResult ? (
+                    <div className="p-5 rounded-xl border border-green-200 bg-green-50 text-center space-y-3" role="status" aria-live="polite">
+                      <CheckCircle2 className="w-10 h-10 text-green-600 mx-auto" />
+                      <h3 className="text-lg font-bold text-ink-900">Booking received successfully</h3>
+                      <p className="text-sm text-ink-700">Keep this tracking number to check your parcel status.</p>
+                      <div className="rounded-lg bg-white border border-green-200 p-3">
+                        <div className="text-xs text-ink-500">Your tracking number</div>
+                        <div className="font-mono text-xl font-bold text-brand-700 break-all">{bookingResult.trackingNo}</div>
+                        <div className="text-sm font-semibold mt-2">Estimated shipping charges: {formatPKR(bookingResult.totalChargesPkr)}</div>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        <Button type="button" variant="primary" onClick={() => { window.location.assign(`/track?trackingNo=${encodeURIComponent(bookingResult.trackingNo)}`); }}>
+                          Track Parcel
+                        </Button>
+                        <Button type="button" variant="secondary" onClick={() => { setBookingResult(null); setCurrentStep(1); }}>
+                          Book Another Parcel
+                        </Button>
+                        <Button type="button" variant="secondary" onClick={() => navigator.clipboard?.writeText(bookingResult.trackingNo)}>
+                          Copy Tracking Number
+                        </Button>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-ink-500 mt-0.5">
-                      Bot protection (Cloudflare Turnstile) will verify request authenticity prior to consignment creation.
-                    </p>
-                  </div>
-
-                  {/* Submission Disabled Banner per Phase F3a Scope */}
-                  <div className="pt-2 text-center space-y-2">
-                    <Button
-                      variant="primary"
-                      size="lg"
-                      disabled
-                      className="w-full opacity-60 cursor-not-allowed"
-                      rightIcon={<Send className="w-4 h-4" />}
-                    >
-                      Submit Consignment Booking
-                    </Button>
-                    <p className="text-xs text-ink-500 font-medium">
-                      Submission is added in the next phase
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="pt-2 text-center space-y-2">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        size="lg"
+                        disabled={isSubmittingBooking}
+                        className="w-full"
+                        onClick={handleSubmitBooking}
+                        rightIcon={<Send className="w-4 h-4" />}
+                      >
+                        {isSubmittingBooking ? 'Submitting booking…' : 'Submit Consignment Booking'}
+                      </Button>
+                      <p className="text-xs text-ink-500">
+                        Booking details are validated before being saved to the courier database.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </div>
             )}
