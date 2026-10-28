@@ -6,6 +6,22 @@ const simulateLatency = (min = 150, max = 300) =>
 export class MockShipmentService implements ShipmentService {
   private inMemoryShipments: ShipmentRecord[] = [];
 
+  async createPublicBooking(input: import('../contracts/shipment.contract').PublicBookingInput): Promise<import('../contracts/shipment.contract').PublicBookingResult> {
+    await simulateLatency();
+    const trackingNo = `DEMO${Date.now().toString().slice(-10)}`;
+    const now = new Date().toISOString();
+    this.inMemoryShipments.unshift({
+      id: trackingNo, trackingNo, senderName: input.sender.name, senderPhone: input.sender.phone,
+      senderAddress: input.sender.address, originCityId: input.sender.cityId,
+      recipientName: input.recipient.name, recipientPhone: input.recipient.phone,
+      recipientAddress: input.recipient.address, destinationCityId: input.recipient.cityId,
+      status: 'booking_created', paymentMethod: input.shipment.paymentMethod,
+      codAmountPkr: input.shipment.codAmount || 0, totalChargesPkr: 0, weightKg: input.shipment.weightKg,
+      serviceId: input.shipment.serviceId, source: 'web_guest', createdAt: now, updatedAt: now,
+    });
+    return { trackingNo, status: 'booking_created', totalChargesPkr: 0, createdAt: now };
+  }
+
   async getShipmentByTracking(trackingNo: string): Promise<ShipmentRecord | null> {
     await simulateLatency();
     const cleanNo = trackingNo.trim().toUpperCase();
