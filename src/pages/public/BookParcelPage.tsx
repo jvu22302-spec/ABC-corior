@@ -1183,7 +1183,7 @@ export function BookParcelPage() {
                         <div className="text-sm font-semibold mt-2">Estimated shipping charges: {formatPKR(bookingResult.totalChargesPkr)}</div>
                       </div>
                       <div className="flex flex-wrap justify-center gap-2">
-                        <Button type="button" variant="primary" onClick={() => { window.location.assign(`/track?trackingNo=${encodeURIComponent(bookingResult.trackingNo)}`); }}>
+                        <Button type="button" variant="primary" onClick={() => { window.location.assign(`/track/${encodeURIComponent(bookingResult.trackingNo)}`); }}>
                           Track Parcel
                         </Button>
                         <Button type="button" variant="secondary" onClick={() => { setBookingResult(null); setCurrentStep(1); }}>
