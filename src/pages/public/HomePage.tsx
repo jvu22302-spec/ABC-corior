@@ -12,6 +12,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { AppImage } from '@/components/media/AppImage';
 import { FeatureIcon, FeatureIconKey } from '@/components/media/FeatureIcon';
 import { validateTrackingNo } from '@/lib/tracking';
+import { env } from '@/config/env';
 import { formatPKR } from '@/lib/format';
 import {
   Search,
@@ -131,13 +132,15 @@ export function HomePage() {
 
                 <div className="mt-2 text-xs text-ink-500 px-2 flex items-center justify-between">
                   <span>Standard format: ABC + Year + 8 digits + Check digit</span>
-                  <button
-                    type="button"
-                    onClick={() => setTrackingInput('ABC26123456784')}
-                    className="text-brand-600 hover:underline font-mono text-[11px]"
-                  >
-                    Sample AWB: ABC26123456784
-                  </button>
+                  {env.VITE_DATA_SOURCE === 'mock' && (
+                    <button
+                      type="button"
+                      onClick={() => setTrackingInput('ABC26123456784')}
+                      className="text-brand-600 hover:underline font-mono text-[11px]"
+                    >
+                      Sample AWB: ABC26123456784
+                    </button>
+                  )}
                 </div>
               </div>
 
