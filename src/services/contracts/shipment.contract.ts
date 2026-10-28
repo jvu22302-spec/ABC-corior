@@ -30,7 +30,15 @@ export interface ShipmentRecord {
   updatedAt: string;
 }
 
+export interface PublicBookingInput {
+  sender: { name: string; phone: string; address: string; cityId: string; zoneId: string };
+  recipient: { name: string; phone: string; address: string; cityId: string; zoneId: string };
+  shipment: { serviceId: string; weightKg: number; paymentMethod: 'cod' | 'prepaid'; codAmount?: number };
+}
+export interface PublicBookingResult { trackingNo: string; status: string; totalChargesPkr: number; createdAt: string; }
+
 export interface ShipmentService {
+  createPublicBooking(input: PublicBookingInput): Promise<PublicBookingResult>;
   getShipmentByTracking(trackingNo: string): Promise<ShipmentRecord | null>;
   listShipments(params?: ShipmentFilterParams): Promise<{ items: ShipmentRecord[]; total: number }>;
 }
