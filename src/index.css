@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #EEF4FF;
+  --color-brand-100: #DBEAFE;
+  --color-brand-500: #1D6BFF;
+  --color-brand-600: #0B5FFF;
+  --color-brand-700: #0A49C7;
+  --color-brand-800: #08379B;
+
+  --color-accent-50: #FFF7ED;
+  --color-accent-100: #FFEDD5;
+  --color-accent-500: #FF7A00;
+  --color-accent-600: #EA6C00;
+  --color-accent-700: #C25700;
+
+  --color-ink-900: #0F172A;
+  --color-ink-700: #334155;
+  --color-ink-600: #475569;
+  --color-ink-400: #94A3B8;
+  --color-ink-300: #CBD5E1;
+  --color-ink-200: #E2E8F0;
+  --color-ink-100: #F1F5F9;
+
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F8FAFC;
+
+  --color-success-bg: #DCFCE7;
+  --color-success: #16A34A;
+  --color-success-dark: #15803D;
+
+  --color-warning-bg: #FEF3C7;
+  --color-warning: #D97706;
+  --color-warning-dark: #B45309;
+
+  --color-danger-bg: #FEE2E2;
+  --color-danger: #DC2626;
+  --color-danger-dark: #B91C1C;
+
+  --color-info-bg: #E0F2FE;
+  --color-info: #0284C7;
+  --color-info-dark: #0369A1;
+
+  --color-neutral: #64748B;
+  --color-neutral-dark: #334155;
+  --color-neutral-bg: #F1F5F9;
+
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+}
+
+:root {
+  --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-inter);
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-surface);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle transitions only, respecting prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Phase M1 Motion Keyframes */
+@keyframes sheen {
+  0% {
+    transform: translateX(-160%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(260%) skewX(-20deg);
+  }
+}
+
+@keyframes border-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    filter: drop-shadow(0 0 6px rgba(11, 95, 255, 0.25));
+  }
+  50% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 16px rgba(11, 95, 255, 0.55));
+  }
+}
+
+@keyframes accent-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 122, 0, 0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Reusable Motion Utility Classes */
+.animate-sheen {
+  animation: sheen 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-border-spin {
+  animation: border-spin 6s linear infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-accent-pulse {
+  animation: accent-pulse 4s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+.animate-float {
+  animation: float 3.5s ease-in-out infinite;
+}
+
+.animate-scan-line {
+  animation: scan-line 4s linear infinite;
+}
+
+@keyframes input-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-4px);
+  }
+  40%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-input-shake {
+  animation: input-shake 0.3s ease-in-out 1;
+}
+

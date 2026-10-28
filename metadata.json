@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix ABC — Courier \u0026 Parcel Tracking",
+  "description": "Courier management and parcel tracking portal with multi-branch logistics, real-time status workflows, and COD handling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
