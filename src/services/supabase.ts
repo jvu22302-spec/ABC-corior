@@ -3,7 +3,7 @@ import { Profile, City, Branch, DeliveryZone, ShippingService, PublicTracking, S
 import { AuthService, SignInParams } from './contracts/auth.contract';
 import { SettingsService } from './contracts/settings.contract';
 import { GeographyService } from './contracts/geography.contract';
-import { ShipmentService, ShipmentFilterParams, ShipmentRecord } from './contracts/shipment.contract';
+import { ShipmentService, ShipmentFilterParams, ShipmentRecord, PublicBookingInput, PublicBookingResult } from './contracts/shipment.contract';
 import { TrackingService } from './contracts/tracking.contract';
 import { RateService, CalculateRateParams, RateBreakdown, QuoteInput, RateQuote, RateNotFoundError } from './contracts/rate.contract';
 import { TicketService, CreateTicketParams, TicketResult } from './contracts/ticket.contract';
