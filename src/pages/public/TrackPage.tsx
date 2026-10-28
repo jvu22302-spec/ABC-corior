@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { trackingService, RateLimitedError } from '@/services';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { validateTrackingNo } from '@/lib/tracking';
+import { env } from '@/config/env';
 import { TrackingInput } from '@/components/tracking/TrackingInput';
 import { TrackingResultCard } from '@/components/tracking/TrackingResultCard';
 import { TrackingTimeline } from '@/components/tracking/TrackingTimeline';
@@ -136,10 +137,12 @@ export function TrackPage() {
       </div>
 
       {/* Dev Mode Demo Consignments Box */}
-      <DevDemoTrackingBox
-        onSelectTrackingNo={handleSelectDemo}
-        activeTrackingNo={activeTrackingNo}
-      />
+      {env.VITE_DATA_SOURCE === 'mock' && (
+        <DevDemoTrackingBox
+          onSelectTrackingNo={handleSelectDemo}
+          activeTrackingNo={activeTrackingNo}
+        />
+      )}
 
       {/* Main Results Region (Live Announcer for Screen Readers) */}
       <section
@@ -160,16 +163,22 @@ export function TrackPage() {
             <p className="text-xs sm:text-sm text-ink-600 max-w-md mx-auto leading-relaxed">
               Consignment numbers consist of prefix <strong className="font-mono text-ink-800">ABC</strong> followed by a 2-digit year and 9 numeric digits.
             </p>
-            <div className="mt-4 pt-3 border-t border-ink-200/60 inline-flex items-center gap-2 text-xs text-ink-500">
-              <span>Standard format example:</span>
-              <button
-                type="button"
-                onClick={() => handleSelectDemo('ABC26123456784')}
-                className="font-mono font-semibold text-brand-600 hover:underline"
-              >
-                ABC26123456784
-              </button>
-            </div>
+            {env.VITE_DATA_SOURCE === 'mock' ? (
+              <div className="mt-4 pt-3 border-t border-ink-200/60 inline-flex items-center gap-2 text-xs text-ink-500">
+                <span>Demo tracking number:</span>
+                <button
+                  type="button"
+                  onClick={() => handleSelectDemo('ABC26123456784')}
+                  className="font-mono font-semibold text-brand-600 hover:underline"
+                >
+                  ABC26123456784
+                </button>
+              </div>
+            ) : (
+              <p className="mt-4 pt-3 border-t border-ink-200/60 text-xs text-ink-500">
+                Tracking updates appear after your parcel is booked and scanned by our team.
+              </p>
+            )}
           </Card>
         )}
 
